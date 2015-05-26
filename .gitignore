@@ -1,0 +1,6 @@
+node_modules/
+src/vendors/
+dev/
+components/css
+components/js
+components/images

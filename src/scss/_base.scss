@@ -1,0 +1,29 @@
+﻿/**********************
+	BASE
+***********************/
+
+@import "bootstrap/variables";
+@import "_variables"; 
+
+//Bootstrap button mixins
+@import "bootstrap/mixins/opacity";
+@import "bootstrap/mixins/tab-focus";
+@import "bootstrap/mixins/vendor-prefixes";
+@import "bootstrap/mixins/buttons";
+@import "bootstrap/buttons";
+
+//Bootstrap grid mixins
+@import "bootstrap/mixins/clearfix";
+@import "bootstrap/mixins/grid-framework";
+@import "bootstrap/mixins/grid";
+
+@import "_fonts"; 
+@import "_mixins";
+@import "_globals";
+
+
+	
+/* IE8 HTML5 support - html5shive */
+article, aside, figure, footer, header, hgroup, main, menu, nav, section {
+	display: block;
+}

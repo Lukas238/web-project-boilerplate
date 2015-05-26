@@ -1,0 +1,28 @@
+{
+  "name": "mastercard-br-mass",
+  "version": "1.0.0",
+  "authors": [
+    "MRM-MCCANN Buenos Aires"
+  ],
+  "moduleType": [
+    "node"
+  ],
+  "dependencies": {
+	"jquery": "~ 1.11.3",
+    "bootstrap-sass-official": "~3.3.4",
+    "bootstrap": "~3.3.4",
+    "jQuery.mmenu": "~5.2.0"
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/vendors",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "html5shiv": "~3.7.2"
+  }
+}
