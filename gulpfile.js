@@ -293,10 +293,10 @@ gulp.task('comps', ['clean:comps'], function () {
 		gulp.watch(cfg.src+'/images/*', ['images', 'comps-images', 'bs-reload']);
 		
 		gulp.watch([
-			cfg.comps+'/*.html',
-			cfg.comps+'/css/*',
-			cfg.comps+'/js/*',
-			cfg.comps+'/images/*'
+			cfg.comp+'/*.html',
+			cfg.comp+'/css/*',
+			cfg.comp+'/js/*',
+			cfg.comp+'/images/*'
 		], ['bs-reload']);		
 	});	
 });
