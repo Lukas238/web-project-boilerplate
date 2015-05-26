@@ -3,12 +3,28 @@
   "title": "Web Project Boilerplate",
   "description": "Boilerplate for web projects with gulp, sass, and bootstrap.",
   "version": "1.0.0",
+  "author": "Lucas Dasso <dassolucas@c238.com.ar>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lukas238/web-project-boilerplate.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lukas238/web-project-boilerplate/issues"
+  },
+  "homepage": "https://github.com/Lukas238/web-project-boilerplate",
+  "keywords": [
+    "boilerplate",
+    "gulp",
+    "html5",
+    "sass",
+    "bootstrap"
+  ],
   "main": "dist/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Lucas Dasso",
-  "devDependencies": {
+  "dependencies": {
     "bower": "^1.4.1",
     "browser-sync": "^2.7.1",
     "fs": "0.0.2",
@@ -31,21 +47,5 @@
     "gulp-clean": "^0.3.1",
     "merge-stream": "^0.1.7",
     "run-sequence": "^1.1.0"
-  },
-  "keywords": [
-    "boilerplate",
-    "gulp",
-    "html5",
-    "sass",
-    "bootstrap"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Lukas238/web-project-boilerplate.git"
-  },
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Lukas238/web-project-boilerplate/issues"
-  },
-  "homepage": "https://github.com/Lukas238/web-project-boilerplate"
+  }
 }

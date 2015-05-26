@@ -39,13 +39,14 @@ var banner = [
   '\n'
 ].join('');
 
+/***********************************************************/
 
 gulp.task('clean:dev', function(cb){
-	del([cfg.dev], cb);
+	del(cfg.dev+'/*', cb);
 });
 
 gulp.task('clean:dist', function(cb){
-	del([cfg.dist], cb);
+	del(cfg.dist+'/*', cb);
 });
 
 gulp.task('clean:comps', function(cb){
@@ -133,7 +134,6 @@ gulp.task('fonts', function () {
 
 
 
-
 gulp.task('vendors', function(){
 
 	return merge(
@@ -204,8 +204,6 @@ gulp.task('images', ['images_optimize'], function() {
 });
 
 
-
-
 gulp.task('browser-sync', function() {
     browserSync.init(null, {
         server: {
@@ -257,7 +255,7 @@ gulp.task('compsBrowser-sync', function() {
 	BUILD
 *******************************/
 gulp.task('build:copyall', ['images'], function () {	
-	return gulp.src(cfg.dev+'*')
+	return gulp.src(cfg.dev+'/*')
     .pipe(gulp.dest(cfg.dist));
 });
 
@@ -289,9 +287,7 @@ gulp.task('default', ['clean:dev'], function(){
 
 //COMPONENTS
 gulp.task('comps', ['clean:comps'], function () {
-	
 	run(['css', 'js', 'fonts', 'vendors', 'images', 'extras', 'comps-css', 'comps-js', 'comps-images', 'comps-fonts', 'compsBrowser-sync'], function () {
-		
 		gulp.watch(cfg.src+'/scss/*.scss', ['css', 'comps-css', 'bs-reload']);
 		gulp.watch(cfg.src+'/js/*', ['js', 'comps-js', 'bs-reload']);
 		gulp.watch(cfg.src+'/images/*', ['images', 'comps-images', 'bs-reload']);
@@ -301,17 +297,11 @@ gulp.task('comps', ['clean:comps'], function () {
 			cfg.comps+'/css/*',
 			cfg.comps+'/js/*',
 			cfg.comps+'/images/*'
-		], ['bs-reload']);
-		
-		
-		
+		], ['bs-reload']);		
 	});	
 });
-
 
 // BUILD
 gulp.task('build', ['clean:dist'], function(){
 	run(['html', 'css', 'js', 'fonts', 'vendors', 'images', 'extras', 'build:copyall']);
 });
-
-
