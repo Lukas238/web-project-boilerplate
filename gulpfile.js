@@ -255,7 +255,7 @@ gulp.task('compsBrowser-sync', function() {
 	BUILD
 *******************************/
 gulp.task('build:copyall', ['images'], function () {	
-	return gulp.src(cfg.dev+'/*')
+	return gulp.src(cfg.dev+'/**/*')
     .pipe(gulp.dest(cfg.dist));
 });
 
