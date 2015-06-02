@@ -17,7 +17,7 @@ var gulp = require('gulp'),
 	imagemin    = require('gulp-imagemin'),
 	merge = require('merge-stream'),
 	del = require('del'),
-	package = require('./package.json');
+	package = require('./package.json'); 
 	
 
 var cfg = {
@@ -25,7 +25,9 @@ var cfg = {
 	dev: 'dev',
 	dist: 'dist',
 	vendors: 'src/vendors',
-	comp: 'components'
+	comp: 'components',
+	wf: 'dev',
+	directory: false	/* Default Working Folder */
 }
 
 var banner = [
@@ -58,9 +60,9 @@ gulp.task('clean:comps', function(cb){
 
 
 gulp.task('html', function () {
-	gulp.src(cfg.src+'/*.html')
-	.pipe(changed(cfg.dev))
-	.pipe(gulp.dest(cfg.dev));
+	gulp.src(cfg.src+'/**/*.html')
+	.pipe(changed(cfg.wf))
+	.pipe(gulp.dest(cfg.wf));
 });
 
 
@@ -104,11 +106,11 @@ gulp.task('css', ['sass-includes'], function () {
 	}))
 	//.pipe(autoprefixer('last 4 version'))
 	//.pipe(header(banner, { package : package }))
-	.pipe(gulp.dest(cfg.dev+'/css'))
-	.pipe(minifyCSS())
+	.pipe(gulp.dest(cfg.wf+'/css'))
+	.pipe(minifyCSS({processImport: false}))
 	.pipe(rename({ suffix: '.min' }))
 	.pipe(sourcemaps.write('./'))
-	.pipe(gulp.dest(cfg.dev+'/css'));
+	.pipe(gulp.dest(cfg.wf+'/css'));
 	
 });
 
@@ -118,18 +120,18 @@ gulp.task('js', function(){
     .pipe(jshint('.jshintrc'))
     .pipe(jshint.reporter('jshint-stylish'))
     //.pipe(header(banner, { package : package }))
-    .pipe(gulp.dest(cfg.dev+'/js'))
+    .pipe(gulp.dest(cfg.wf+'/js'))
     .pipe(uglify())
     //.pipe(header(banner, { package : package }))
     .pipe(rename({ suffix: '.min' }))
-    .pipe(gulp.dest(cfg.dev+'/js'));
+    .pipe(gulp.dest(cfg.wf+'/js'));
 });
 
 
 gulp.task('fonts', function () {
     return gulp.src(cfg.src+'/fonts/*')
-	.pipe(changed(cfg.dev+'/fonts'))
-    .pipe(gulp.dest(cfg.dev+'/fonts'));
+	.pipe(changed(cfg.wf+'/fonts'))
+    .pipe(gulp.dest(cfg.wf+'/fonts'));
 });
 
 
@@ -143,37 +145,37 @@ gulp.task('vendors', function(){
 			cfg.vendors+'/jquery/dist/jquery.js',
 			cfg.vendors+'/jQuery.mmenu/dist/js/jquery.mmenu.min.js'
 		])
-		.pipe(changed(cfg.dev+'/js'))
+		.pipe(changed(cfg.wf+'/js'))
 		.pipe(concat('vendors.js', {newLine: ';'}))
-		.pipe(gulp.dest(cfg.dev+'/js/'))
+		.pipe(gulp.dest(cfg.wf+'/js/'))
 		.pipe(uglify())
 		.pipe(rename({ suffix: '.min' }))
-		.pipe(gulp.dest(cfg.dev+'/js/')),
+		.pipe(gulp.dest(cfg.wf+'/js/')),
 		
 		gulp.src([
 			cfg.vendors+'/bootstrap/dist/css/bootstrap.css',
 			cfg.vendors+'/jQuery.mmenu/dist/css/jquery.mmenu.css',
 			cfg.vendors+'/jQuery.mmenu/dist/css/extensions/jquery.mmenu.themes.css'
 		])
-		.pipe(changed(cfg.dev+'/css'))
+		.pipe(changed(cfg.wf+'/css'))
 		.pipe(concat('vendors.css'))
-		.pipe(gulp.dest(cfg.dev+'/css'))
-		.pipe(minifyCSS())
+		.pipe(gulp.dest(cfg.wf+'/css'))
+		.pipe(minifyCSS({processImport: false}))
 		.pipe(rename({ suffix: '.min' }))
-		.pipe(gulp.dest(cfg.dev+'/css')),
+		.pipe(gulp.dest(cfg.wf+'/css')),
 	
 	
 		gulp.src([
 			cfg.vendors+'/bootstrap/dist/fonts/*'
 		])
-		.pipe(changed(cfg.dev+'/fonts'))
-		.pipe(gulp.dest(cfg.dev+'/fonts/')),
+		.pipe(changed(cfg.wf+'/fonts'))
+		.pipe(gulp.dest(cfg.wf+'/fonts/')),
 		
 		gulp.src([
 			cfg.vendors+'/html5shiv/dist/html5shiv.min.js'
 		])
-		.pipe(changed(cfg.dev+'/js'))
-		.pipe(gulp.dest(cfg.dev+'/js'))
+		.pipe(changed(cfg.wf+'/js'))
+		.pipe(gulp.dest(cfg.wf+'/js'))
 					
 	); //Merge
 });
@@ -183,8 +185,8 @@ gulp.task('extras', function() {
 		cfg.src+'/*.*',
 		'!'+cfg.src+'/*.html'
 	])
-	.pipe(changed(cfg.dev))
-	.pipe(gulp.dest(cfg.dev));
+	.pipe(changed(cfg.wf))
+	.pipe(gulp.dest(cfg.wf));
 });
 
 //compressing images & handle SVG files
@@ -194,20 +196,21 @@ gulp.task('images_optimize', function(tmp) {
 		cfg.src+'/images/*.png'
 	])
     .pipe(imagemin({ optimizationLevel: 5, progressive: true, interlaced: true }))
-	.pipe(gulp.dest(cfg.dev+'/images'));
+	.pipe(gulp.dest(cfg.wf+'/images'));
 });
 
 //compressing images & handle SVG files
 gulp.task('images', ['images_optimize'], function() {
     gulp.src(cfg.src+'/images/**/*')
-    .pipe(gulp.dest(cfg.dev+'/images'));
+    .pipe(gulp.dest(cfg.wf+'/images'));
 });
 
 
 gulp.task('browser-sync', function() {
     browserSync.init(null, {
         server: {
-            baseDir: 'dev'
+            baseDir: cfg.wf,
+			directory: cfg.directory
         }
     });
 });
@@ -218,48 +221,6 @@ gulp.task('bs-reload', function () {
 });
 
 
-/*******************************
-	DEV COMPONENTS
-*******************************/
-gulp.task('comps-css', ['css'], function () {
-    return gulp.src(cfg.dev+'/css/*')
-    .pipe(gulp.dest(cfg.comp+'/css'));
-});
-
-gulp.task('comps-js', ['js'], function () {
-	return gulp.src(cfg.dev+'/js/*')
-    .pipe(gulp.dest(cfg.comp+'/js'));
-});
-
-gulp.task('comps-images', ['images'], function () {	
-	return gulp.src(cfg.dev+'/images/*')
-    .pipe(gulp.dest(cfg.comp+'/images'));
-});
-
-gulp.task('comps-fonts', ['images'], function () {	
-	return gulp.src(cfg.dev+'/fonts/*')
-    .pipe(gulp.dest(cfg.comp+'/fonts'));
-});
-
-gulp.task('compsBrowser-sync', function() {
-    browserSync.init(null, {
-        server: {
-            baseDir: './components',
-			directory: true
-        }
-    });
-});
-
-
-/*******************************
-	BUILD
-*******************************/
-gulp.task('build:copyall', ['images'], function () {	
-	return gulp.src(cfg.dev+'/**/*')
-    .pipe(gulp.dest(cfg.dist));
-});
-
-
 /******************************************
 	TASKS
 *******************************************/
@@ -267,18 +228,21 @@ gulp.task('build:copyall', ['images'], function () {
 // DEV
 gulp.task('default', ['clean:dev'], function(){
 	
+	cfg.wf = cfg.dev;
+	cfg.directory = false;
+	
 	run(['html', 'css', 'js', 'fonts', 'vendors', 'images', 'extras', 'browser-sync'], function(){
 		
-		gulp.watch(cfg.src+'/*.html', ['html']);
-		gulp.watch(cfg.src+'/scss/*.scss', ['css']);
-		gulp.watch(cfg.src+'/js/*', ['js']);
-		gulp.watch(cfg.src+'/images/*', ['images']);
+		gulp.watch(cfg.src+'/**/*.html', ['html']);
+		gulp.watch(cfg.src+'/scss/**/*.scss', ['css']);
+		gulp.watch(cfg.src+'/js/**/*', ['js']);
+		gulp.watch(cfg.src+'/images/**/*', ['images']);
 		
 		gulp.watch([
-			cfg.dev+'/*.html',
-			cfg.dev+'/css/*',
-			cfg.dev+'/js/*',
-			cfg.dev+'/images/*'
+			cfg.wf + '/**/.html',
+			cfg.wf + '/css/**/*',
+			cfg.wf + '/js/**/*',
+			cfg.wf + '/images/**/*'
 		], ['bs-reload']);
 		
 	});
@@ -287,21 +251,32 @@ gulp.task('default', ['clean:dev'], function(){
 
 //COMPONENTS
 gulp.task('comps', ['clean:comps'], function () {
-	run(['css', 'js', 'fonts', 'vendors', 'images', 'extras', 'comps-css', 'comps-js', 'comps-images', 'comps-fonts', 'compsBrowser-sync'], function () {
-		gulp.watch(cfg.src+'/scss/*.scss', ['css', 'comps-css', 'bs-reload']);
-		gulp.watch(cfg.src+'/js/*', ['js', 'comps-js', 'bs-reload']);
-		gulp.watch(cfg.src+'/images/*', ['images', 'comps-images', 'bs-reload']);
+	
+	cfg.wf = cfg.comp;
+	cfg.directory = true;
+	
+	run(['css', 'js', 'fonts', 'vendors', 'images', 'extras', 'browser-sync'], function () {
+		
+		gulp.watch(cfg.src+'/scss/**/*.scss', ['css']);
+		gulp.watch(cfg.src+'/js/*', ['js']);
+		gulp.watch(cfg.src+'/images/**/*', ['images']);
 		
 		gulp.watch([
-			cfg.comp+'/*.html',
-			cfg.comp+'/css/*',
-			cfg.comp+'/js/*',
-			cfg.comp+'/images/*'
-		], ['bs-reload']);		
+			cfg.wf + '/**/*.html',
+			cfg.wf + '/css/**/*',
+			cfg.wf + '/js/**/*',
+			cfg.wf + '/images/**/'
+		], ['bs-reload']);
+		
 	});	
 });
 
+
 // BUILD
 gulp.task('build', ['clean:dist'], function(){
-	run(['html', 'css', 'js', 'fonts', 'vendors', 'images', 'extras', 'build:copyall']);
+	cfg.wf = cfg.dist;
+	
+	run(['html', 'css', 'js', 'fonts', 'vendors', 'images', 'extras']);
 });
+
+
