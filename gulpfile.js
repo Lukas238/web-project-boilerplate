@@ -261,11 +261,6 @@ gulp.task('browser-sync', function() {
 });
 
 
-gulp.task('bs-reload', function () {
-    browserSync.reload();
-});
-
-
 /******************************************
 	TASKS
 *******************************************/
