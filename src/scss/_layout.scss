@@ -8,4 +8,10 @@ body{
 	height: 100%;
 }
 
+#wrapper{
+	@include container-fixed;
+}
+
+
+
 
