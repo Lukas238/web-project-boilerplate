@@ -2,6 +2,40 @@
 	SETUP
 ******************************/
 
+//VARIABLES
+var cfg = {
+	src: './src',
+	dev: './dev',
+	dist: './dist',
+	comp: './components',
+	vendors: './src/vendors',
+	wf: 'dev', /* Defautl Working Folder */
+	directory: false	/* BrowserSync */
+}
+
+//ARCHIVOS
+cfg.files = {
+		sass_include_paths: [ 
+			cfg.vendors + '/bootstrap-sass-official/assets/stylesheets/'
+		],
+		vendors: {
+			css: [
+				cfg.vendors+'/bootstrap/dist/css/bootstrap.css',
+				cfg.vendors+'/jQuery.mmenu/dist/css/jquery.mmenu.css',
+				cfg.vendors+'/jQuery.mmenu/dist/css/extensions/jquery.mmenu.themes.css'
+			],
+			js: [
+				cfg.vendors+'/jquery/dist/jquery.js',
+				cfg.vendors+'/jQuery.mmenu/dist/js/jquery.mmenu.min.js'
+			],
+			fonts: [
+				cfg.vendors+'/bootstrap/dist/fonts/*'
+			]
+		}
+	};
+
+
+
 //PLUGINS
 var gulp = require('gulp'),
 	plumber = require('gulp-plumber'),
@@ -26,17 +60,8 @@ var gulp = require('gulp'),
 	del = require('del'),
 	package = require('./package.json'); 
 	
-//VARIABLES GLOBALES
-var cfg = {
-	src: './src',
-	dev: 'dev',
-	dist: 'dist',
-	vendors: 'src/vendors',
-	comp: 'components',
-	wf: 'dev',
-	directory: false	/* Default Working Folder */
-}
 
+//HEADER
 var banner = [
   '/*!\n' +
   ' * <%= package.title %>\n' +
@@ -62,6 +87,7 @@ gulp.src = function() {
 	);
 };
 
+
 /******************************
 	TASKS 
 ******************************/
@@ -83,7 +109,10 @@ gulp.task('clean:comps', function(cb){
 
 
 gulp.task('html', function () {
-	return gulp.src(cfg.src+'/**/*.html')
+	return gulp.src([
+		cfg.src+'/**/*.html',
+		'!'+cfg.vendors+'/**/*.html'
+	])
 	.pipe(changed(cfg.wf))
 	.pipe(gulp.dest(cfg.wf))
 	.pipe(browserSync.reload({stream:true}));
@@ -122,12 +151,9 @@ gulp.task('css', function () {
 //gulp.task('css', ['sass-includes'], function () {
 	
 	return gulp.src(cfg.src+'/scss/styles.scss')
-	.pipe(plumber())
 	.pipe(sourcemaps.init())
 	.pipe(sass({
-		includePaths: [ 
-			cfg.vendors + '/bootstrap-sass-official/assets/stylesheets/'
-		],
+		includePaths: cfg.files.sass_include_paths,
 		errLogToConsole: true
 	}))
 	.pipe(autoprefixer('last 4 version'))
@@ -158,7 +184,6 @@ gulp.task('js', function(){
 
 gulp.task('fonts', function () {
     return gulp.src(cfg.src+'/fonts/*')
-	.pipe(changed(cfg.src+'/fonts'))
     .pipe(gulp.dest(cfg.wf+'/fonts'))
 	.pipe(browserSync.reload({stream:true}));
 });
@@ -170,40 +195,29 @@ gulp.task('vendors', function(){
 	return merge(
 
 		//SCRIPTS
-		gulp.src([
-			cfg.vendors+'/jquery/dist/jquery.js',
-			cfg.vendors+'/jQuery.mmenu/dist/js/jquery.mmenu.min.js'
-		])
-		.pipe(changed(cfg.src+'/js'))
+		gulp.src( cfg.files.vendors.js )
 		.pipe(concat('vendors.js', {newLine: ';'}))
 		.pipe(gulp.dest(cfg.wf+'/js/'))
 		.pipe(uglify())
 		.pipe(rename({ suffix: '.min' }))
 		.pipe(gulp.dest(cfg.wf+'/js/')),
 		
-		gulp.src([
-			cfg.vendors+'/bootstrap/dist/css/bootstrap.css',
-			cfg.vendors+'/jQuery.mmenu/dist/css/jquery.mmenu.css',
-			cfg.vendors+'/jQuery.mmenu/dist/css/extensions/jquery.mmenu.themes.css'
-		])
-		.pipe(changed(cfg.wf+'/css'))
+		//CSS
+		gulp.src( cfg.files.vendors.css )
 		.pipe(concat('vendors.css'))
 		.pipe(gulp.dest(cfg.wf+'/css'))
 		.pipe(minifyCSS({processImport: false}))
 		.pipe(rename({ suffix: '.min' }))
 		.pipe(gulp.dest(cfg.wf+'/css')),
 	
-	
-		gulp.src([
-			cfg.vendors+'/bootstrap/dist/fonts/*'
-		])
-		.pipe(changed(cfg.wf+'/fonts'))
+		//FONTS
+		gulp.src( cfg.files.vendors.fonts )
 		.pipe(gulp.dest(cfg.wf+'/fonts/')),
 		
+		//STAND-ALONE SCRIPTS
 		gulp.src([
 			cfg.vendors+'/html5shiv/dist/html5shiv.min.js'
 		])
-		.pipe(changed(cfg.src+'/js'))
 		.pipe(gulp.dest(cfg.wf+'/js'))
 					
 	); //Merge
@@ -281,10 +295,10 @@ gulp.task('comps', ['clean:comps'], function () {
 	
 	run(['css', 'js', 'fonts', 'vendors', 'images', 'extras', 'browser-sync'], function () {
 		
-		gulp.watch(cfg.src+'/**/*.html', ['html', 'bs-reload']);
-		gulp.watch(cfg.src+'/scss/**/*.scss', ['css', 'bs-reload']);
-		gulp.watch(cfg.src+'/js/**/*.js', ['js', 'bs-reload']);
-		gulp.watch(cfg.src+'/images/**/*', ['images', 'bs-reload']);
+		gulp.watch(cfg.wf+'/**/*.html', ['html']);
+		gulp.watch(cfg.src+'/scss/**/*.scss', ['css']);
+		gulp.watch(cfg.src+'/js/**/*.js', ['js']);
+		gulp.watch(cfg.src+'/images/**/*', ['images']);
 		
 	});	
 });
