@@ -147,8 +147,7 @@ gulp.task('sass-includes', function (callback) {
 });
 
 
-gulp.task('css', function () {
-//gulp.task('css', ['sass-includes'], function () {
+gulp.task('css', ['sass-includes'], function () {
 	
 	return gulp.src(cfg.src+'/scss/styles.scss')
 	.pipe(sourcemaps.init())
